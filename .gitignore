@@ -21,3 +21,4 @@ bin/
 /nbdist/
 /.nb-gradle/
 *.nb-gradle-properties
+"paymentchainparent/bussinesdomain/product/nbactions.xml" 
