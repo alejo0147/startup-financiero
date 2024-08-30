@@ -102,6 +102,9 @@ public class CustomerRestController {
                     String productName = getProductName(p.getProductId());
                     p.setProductName(productName);
                 });
+
+                List<?> transactions = findAllTransactions(customer.getIban());
+                customer.setTransactions(transactions);
                 return new ResponseEntity<>(customer, HttpStatus.OK);
             }
             return new ResponseEntity<>(customer, HttpStatus.NO_CONTENT);
@@ -110,6 +113,12 @@ public class CustomerRestController {
     }
 
     // Métodos externa service
+
+    /**
+     * Llama al microservicio product, por medio del id del product y retorna un nombre
+     * @param id es el id del producto
+     * @return name que es el nombre del producto
+     */
     private String getProductName(Long id) {
         // Usar el WebClient inyectado y configurado a través de WebClientConfig
         WebClient build = _webClientbuilder
@@ -127,6 +136,26 @@ public class CustomerRestController {
         // Extraer el nombre del producto del JsonNode recibido
         String name = block.get("name").asText();
         return name;
+    }
+
+    /**
+     * Llamas el microservicio de transaction para retornar una lista de transacciones por medio del N° de cuenta
+     * @param iban es el N° de cuenta  de la transacción
+     * @return transactions que es la lista de transacciones pertenecientes al N° de cuenta
+     */
+    private List<?> findAllTransactions(String iban){
+        WebClient build = _webClientbuilder
+                .baseUrl("http://localhost:8082/transaction")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+        List<?> transactions = build.method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/customer/transactions")
+                        .queryParam("ibanAccount", iban)
+                        .build())
+                .retrieve()
+                .bodyToFlux(Object.class).collectList().block();
+        return transactions;
     }
 
 }
