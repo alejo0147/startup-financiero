@@ -35,7 +35,7 @@ public class ProductRestController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable Long id) {
+    public ResponseEntity<?> get(@PathVariable ("id") Long id) {
         Optional<Product> find = _productRepository.findById(id);
         if (find.isPresent()) {
              return new ResponseEntity<>(find.get(), HttpStatus.OK);
@@ -45,7 +45,7 @@ public class ProductRestController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<?> put(@PathVariable ("id") Long id, @RequestBody Product product) {
         Optional<Product> find = _productRepository.findById(id);
         if (find.isPresent()) {
             Product newProduct = find.get();
@@ -66,7 +66,7 @@ public class ProductRestController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable ("id") Long id) {
         Optional<Product> find = _productRepository.findById(id);
         if (find.isPresent()) {
             _productRepository.deleteById(id);
