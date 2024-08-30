@@ -10,8 +10,9 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import java.time.Duration;
 import java.util.Collections;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -22,12 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
@@ -97,14 +92,14 @@ public class CustomerRestController {
     }
 
     @GetMapping("/full")
-    public ResponseEntity<Customer> getByCode(String code) {
+    public ResponseEntity<Customer> getByCode(@RequestParam (name = "code") String code) {
         Optional<Customer> cusOptional = _customerRepository.findByCodeIgnoreCase(code);
         if (cusOptional.isPresent()) {
             Customer customer = cusOptional.get();
             List<CustomerProduct> products = customer.getProducts();
             if (!products.isEmpty()) {
                 products.forEach(p -> {
-                    String productName = getProductName(p.getId());
+                    String productName = getProductName(p.getProductId());
                     p.setProductName(productName);
                 });
                 return new ResponseEntity<>(customer, HttpStatus.OK);
